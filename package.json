@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@types/jest": "^26.0.10",
     "babel-jest": "~25.2.6",
     "jest": "~25.2.6",
     "react-test-renderer": "~16.11.0"
