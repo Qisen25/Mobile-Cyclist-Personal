@@ -1,0 +1,64 @@
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { StyleSheet } from "react-native"
+import { SocialIcon } from "react-native-elements";
+import * as GoogleSignIn from "expo-google-sign-in";
+
+/**
+ * Component for logging in using Google.
+ * 
+ * @component
+ */
+export default function GoogleLoginButton({ title, login, ...props }) {
+  const [authenticating, setAuthenticating] = useState(false);
+
+  const onPress = async () => {
+    try {
+      setAuthenticating(true);
+
+      await GoogleSignIn.askForPlayServicesAsync();
+      const res = await GoogleSignIn.signInAsync();
+
+      if (res.type === "success") {
+        login(res.user.auth.idToken);
+      } else {
+        // Placeholder.
+        login("");
+        //setAuthenticating(false);
+      }
+    } catch (err) {
+      setAuthenticating(false);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await GoogleSignIn.initAsync();
+      const user = await GoogleSignIn.signInSilentlyAsync();
+
+      if (user) {
+        login(user.auth.idToken);
+      }
+    })();
+  });
+
+  return (
+    <SocialIcon
+      button
+      type="google"
+      title={title}
+      style={styles.google}
+      onPress={onPress}
+      {...props}
+    />
+  );
+}
+
+GoogleLoginButton.propTypes = {
+  title: PropTypes.string.isRequired,
+  login: PropTypes.func.isRequired
+};
+
+const styles = StyleSheet.create({
+
+});

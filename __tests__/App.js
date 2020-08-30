@@ -4,8 +4,12 @@ import React from "react";
 const App = require("../App.js").default;
 
 // Note: test renderer must be required after react-native.
-import renderer from "react-test-renderer";
+import renderer, { act } from "react-test-renderer";
 
-it("renders correctly", () => {
-  renderer.create(<App />);
+jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+
+it("renders correctly",  async () => {
+  await act(async () => {
+    renderer.create(<App />);
+  });
 });
