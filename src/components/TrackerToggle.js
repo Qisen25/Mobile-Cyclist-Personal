@@ -1,10 +1,16 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { StyleSheet, Text, Pressable } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager"
 
 const LOCATION_TASK = "background-location-task";
 
+/**
+ * Component for toggling background geolocation.
+ *
+ * @component
+ */
 export default function TrackerToggle(props) {
   const [enabled, setEnabled] = useState(false);
 
@@ -35,6 +41,11 @@ export default function TrackerToggle(props) {
       <Text>{enabled ? "Stop" : "Start"}</Text>
     </Pressable>
   );
+}
+
+TrackerToggle.propTypes = {
+  notificationTitle: PropTypes.string.isRequired,
+  notificationBody: PropTypes.string.isRequired
 }
 
 const styles = StyleSheet.create({
