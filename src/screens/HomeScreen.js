@@ -6,6 +6,12 @@ import SettingsScreen from "./SettingsScreen";
 
 const Tab = createBottomTabNavigator();
 
+/**
+ * Component for the Home screen, which navigates
+ * between the tracking and settings screens.
+ * 
+ * @component
+ */
 export default function HomeScreen() {
   return (
     <Tab.Navigator

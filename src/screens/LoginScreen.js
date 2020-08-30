@@ -3,7 +3,6 @@ import { StyleSheet, View, Image } from "react-native";
 import { SocialIcon } from "react-native-elements";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 import GoogleSignInButton from "../components/GoogleLoginButton";
-import expektusLogo from "../../assets/expektus-logo.png";
 
 /**
  * Component for the login screen.
@@ -15,7 +14,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.logo} source={expektusLogo}/>
+      <Image style={styles.logo} source={{ uri: "../../assets/expektus-logo.png" }} />
       <GoogleSignInButton 
         style={styles.google}
         login={authContext.login}

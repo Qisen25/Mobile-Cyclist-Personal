@@ -22,6 +22,7 @@ export default function GoogleLoginButton({ login, ...props }) {
       if (res.type === "success") {
         login(res.user.auth.idToken);
       } else {
+        // Placeholder.
         login("");
         //setAuthenticating(false);
       }

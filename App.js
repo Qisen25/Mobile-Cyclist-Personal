@@ -9,6 +9,11 @@ import AuthenticationContext from "./src/contexts/AuthenticationContext";
 
 const Stack = createStackNavigator();
 
+/**
+ * Main component for the application.
+ * 
+ * @component
+ */
 export default function App() {
   const [state, dispatch] = useReducer((prevState, action) => {
     switch (action.type) {
@@ -27,8 +32,10 @@ export default function App() {
     user: null
   });
 
+  // To be passed to the various login buttons.
   const authContext = useMemo(() => ({
     async login(data) {
+      // Placeholder.
       dispatch({ type: "LOGIN", user: { id: "0" } });
     },
     async logout() {
