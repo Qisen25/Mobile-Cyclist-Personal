@@ -1,10 +1,10 @@
 import React from "react";
 import { Icon } from "react-native-elements";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import TrackerScreen from "./TrackerScreen";
 import SettingsScreen from "./SettingsScreen";
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 /**
  * Component for the Home screen, which navigates
@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator();
 export default function HomeScreen() {
   return (
     <Tab.Navigator
+      shifting
       screenOptions={({ route }) => ({
         tabBarIcon({ color, size }) {
           let iconName;
@@ -28,13 +29,9 @@ export default function HomeScreen() {
           return <Icon type="font-awesome-5" name={iconName} color={color} size={size}/>
         }
       })}
-      tabBarOptions={{
-        activeTintColor: "#127bd6",
-        inactiveTintColor: "gray"
-      }}
     >
-      <Tab.Screen name="Tracker" component={TrackerScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen options={{ tabBarColor: "#127bd6" }} name="Tracker" component={TrackerScreen} />
+      <Tab.Screen options={{ tabBarColor: "purple" }} name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 }

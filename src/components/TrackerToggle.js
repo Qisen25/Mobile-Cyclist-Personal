@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, Text, Pressable } from "react-native";
+import { StyleSheet, TouchableHighlight } from "react-native";
 import * as Location from "expo-location";
-import * as TaskManager from "expo-task-manager"
+import * as TaskManager from "expo-task-manager";
 
 const LOCATION_TASK = "background-location-task";
 
@@ -12,6 +12,15 @@ const LOCATION_TASK = "background-location-task";
  * @component
  */
 export default function TrackerToggle(props) {
+  const {
+    onToggle,
+    accuracy,
+    notificationTitle,
+    notificationBody,
+    children,
+    ...rest
+  } = props
+
   const [enabled, setEnabled] = useState(false);
 
   const onPress = async () => {
@@ -24,10 +33,10 @@ export default function TrackerToggle(props) {
 
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
-          accuracy: Location.Accuracy.Highest,
+          accuracy: accuracy,
           foregroundService: {
-            notificationTitle: props.notificationTitle,
-            notificationBody: props.notificationBody
+            notificationTitle: notificationTitle,
+            notificationBody: notificationBody
           }
         });
 
@@ -36,17 +45,23 @@ export default function TrackerToggle(props) {
     }
   };
 
+  useEffect(() => onToggle(enabled), [enabled]);
+
   return (
-    <Pressable onPress={onPress}>
-      <Text>{enabled ? "Stop" : "Start"}</Text>
-    </Pressable>
+    <TouchableHighlight onPress={onPress} {...rest}>
+      {children}
+    </TouchableHighlight>
   );
 }
 
 TrackerToggle.propTypes = {
+  onToggle: PropTypes.func.isRequired,
+  accuracy: PropTypes.number.isRequired,
   notificationTitle: PropTypes.string.isRequired,
   notificationBody: PropTypes.string.isRequired
 }
+
+TrackerToggle.Accuracy = Location.Accuracy;
 
 const styles = StyleSheet.create({
   buttonStart: {

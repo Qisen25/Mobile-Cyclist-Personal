@@ -9,7 +9,7 @@ import * as GoogleSignIn from "expo-google-sign-in";
  * 
  * @component
  */
-export default function GoogleLoginButton({ login, ...props }) {
+export default function GoogleLoginButton({ title, login, ...props }) {
   const [authenticating, setAuthenticating] = useState(false);
 
   const onPress = async () => {
@@ -46,7 +46,7 @@ export default function GoogleLoginButton({ login, ...props }) {
     <SocialIcon
       button
       type="google"
-      title="Log In With Google"
+      title={title}
       style={styles.google}
       onPress={onPress}
       {...props}
@@ -55,6 +55,7 @@ export default function GoogleLoginButton({ login, ...props }) {
 }
 
 GoogleLoginButton.propTypes = {
+  title: PropTypes.string.isRequired,
   login: PropTypes.func.isRequired
 };
 
