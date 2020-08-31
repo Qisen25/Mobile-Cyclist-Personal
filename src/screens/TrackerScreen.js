@@ -5,15 +5,13 @@ import TrackerToggle from "../components/TrackerToggle";
 
 /**
  * Component for the tracking screen.
- * 
+ *
  * @component
  */
 export default function TrackerScreen() {
   const [enabled, setEnabled] = useState(false);
 
-  const onToggle = (enabled) => setEnabled(enabled);
-
-  console.log(enabled);
+  const onToggle = e => setEnabled(e);
 
   return (
     <View style={styles.container}>
@@ -46,6 +44,6 @@ const styles = StyleSheet.create({
   },
   trackerButtonText: {
     color: "#ffffff",
-    fontSize: 18,
+    fontSize: 18
   }
 });

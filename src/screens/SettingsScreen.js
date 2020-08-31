@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 
 /**
  * Component for the settings screen.
- * 
+ *
  * @component
  */
 export default function SettingsScreen() {

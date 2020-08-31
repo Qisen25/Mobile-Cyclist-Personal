@@ -9,7 +9,7 @@ const Tab = createMaterialBottomTabNavigator();
 /**
  * Component for the Home screen, which navigates
  * between the tracking and settings screens.
- * 
+ *
  * @component
  */
 export default function HomeScreen() {
@@ -17,16 +17,17 @@ export default function HomeScreen() {
     <Tab.Navigator
       shifting
       screenOptions={({ route }) => ({
+        // eslint-disable-next-line react/prop-types
         tabBarIcon({ color, size }) {
           let iconName;
 
           if (route.name === "Tracker") {
             iconName = "globe";
           } else if (route.name === "Settings") {
-            iconName = "cog"
+            iconName = "cog";
           }
 
-          return <Icon type="font-awesome-5" name={iconName} color={color} size={size}/>
+          return <Icon type="font-awesome-5" name={iconName} color={color} size={size}/>;
         }
       })}
     >

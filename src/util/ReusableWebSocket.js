@@ -13,9 +13,6 @@ export default class ReusableWebSocket {
     }
 
     this.ws = new WebSocket(this.url);
-    this.ws.onclose = () => {
-      
-    };
   }
 
   on(event, fn) {
