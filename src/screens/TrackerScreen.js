@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Linking } from "react-native";
 import { Text } from "react-native-elements";
 import TrackerToggle from "../components/TrackerToggle";
 

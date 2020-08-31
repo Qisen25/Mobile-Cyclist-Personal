@@ -63,18 +63,6 @@ TrackerToggle.propTypes = {
 
 TrackerToggle.Accuracy = Location.Accuracy;
 
-const styles = StyleSheet.create({
-  buttonStart: {
-    
-  },
-  buttonStop: {
-
-  },
-  buttonText: {
-
-  }
-});
-
 TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
   if (error) {
     console.log(error);
