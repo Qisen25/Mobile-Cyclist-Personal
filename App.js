@@ -10,10 +10,11 @@ const Stack = createStackNavigator();
 
 /**
  * Main component for the application.
- * 
+ *
  * @component
  */
 export default function App() {
+  // eslint-disable-next-line consistent-return
   const [state, dispatch] = useReducer((prevState, action) => {
     switch (action.type) {
       case "LOGIN":
@@ -33,11 +34,11 @@ export default function App() {
 
   // To be passed to the various login buttons.
   const authContext = useMemo(() => ({
-    async login(data) {
+    login(data) {
       // Placeholder.
       dispatch({ type: "LOGIN", user: { id: "0" } });
     },
-    async logout() {
+    logout() {
       dispatch({ type: "LOGOUT" });
     }
   }), []);
@@ -62,6 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
-  },
+    justifyContent: "center"
+  }
 });

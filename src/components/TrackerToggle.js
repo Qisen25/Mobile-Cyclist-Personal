@@ -19,7 +19,7 @@ export default function TrackerToggle(props) {
     notificationBody,
     children,
     ...rest
-  } = props
+  } = props;
 
   const [enabled, setEnabled] = useState(false);
 
@@ -58,22 +58,11 @@ TrackerToggle.propTypes = {
   onToggle: PropTypes.func.isRequired,
   accuracy: PropTypes.number.isRequired,
   notificationTitle: PropTypes.string.isRequired,
-  notificationBody: PropTypes.string.isRequired
-}
+  notificationBody: PropTypes.string.isRequired,
+  children: PropTypes.any
+};
 
 TrackerToggle.Accuracy = Location.Accuracy;
-
-const styles = StyleSheet.create({
-  buttonStart: {
-    
-  },
-  buttonStop: {
-
-  },
-  buttonText: {
-
-  }
-});
 
 TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
   if (error) {

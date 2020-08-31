@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet } from "react-native"
+import { StyleSheet } from "react-native";
 import { SocialIcon } from "react-native-elements";
 import * as GoogleSignIn from "expo-google-sign-in";
 
 /**
  * Component for logging in using Google.
- * 
+ *
  * @component
  */
 export default function GoogleLoginButton({ title, login, ...props }) {
@@ -24,7 +24,6 @@ export default function GoogleLoginButton({ title, login, ...props }) {
       } else {
         // Placeholder.
         login("");
-        //setAuthenticating(false);
       }
     } catch (err) {
       setAuthenticating(false);

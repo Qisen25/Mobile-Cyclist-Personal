@@ -8,7 +8,7 @@ import renderer, { act } from "react-test-renderer";
 
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
 
-it("renders correctly",  async () => {
+it("renders correctly", async () => {
   await act(async () => {
     renderer.create(<App />);
   });

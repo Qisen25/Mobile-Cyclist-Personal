@@ -6,7 +6,7 @@ import GoogleSignInButton from "../components/GoogleLoginButton";
 
 /**
  * Component for the login screen.
- * 
+ *
  * @component
  */
 export default function LoginScreen() {
@@ -18,7 +18,7 @@ export default function LoginScreen() {
         <Image style={styles.logo} source={require("../../assets/expektus-logo.png")} />
       </View>
       <View style={styles.buttonsContainer}>
-        <GoogleSignInButton 
+        <GoogleSignInButton
           title="Sign In With Google"
           style={styles.google}
           login={authContext.login}
