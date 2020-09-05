@@ -70,7 +70,7 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
     console.log(error);
   } else if (data) {
     console.log(data.locations);
-    //format the server expects
+    // format the server expects
     let cycData = {
       "type": "cyclist",
       "long": data.locations[0].coords.longitude,

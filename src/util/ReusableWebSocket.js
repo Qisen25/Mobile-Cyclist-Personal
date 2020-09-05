@@ -8,6 +8,7 @@ export class ReusableWebSocket {
     this.url = url;
     this.options = null;
     this.ws = null;
+    // if authorised allow for reconnection
     this.attemptReconnect = false;
   }
 
@@ -32,7 +33,7 @@ export class ReusableWebSocket {
 
     this.ws.onclose = () => {
       console.log("Socket is closed");
-      // allow reconnection attempts if client is attemptReconnect
+      // allow reconnection attempts if client is authorised
       if(this.attemptReconnect == true){
         console.log("Socket trying to reconnect");
             setTimeout(() => {this.connect()}, 3000);
