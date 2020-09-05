@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
 import { SocialIcon } from "react-native-elements";
 import * as GoogleSignIn from "expo-google-sign-in";
+import ReusableWebSocket from "../util/ReusableWebSocket";
 
 /**
  * Component for logging in using Google.
@@ -21,6 +22,11 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
       if (res.type === "success") {
         login(res.user.auth.idToken);
+        // using access_token for server auth coz idtoken shows up as null for me...
+        // and access token probs suitable coz we just use it to auth server connection
+        // it doesn't have personal info like name, email about user by itself
+        ReusableWebSocket.setHeaders({"headers" : { "authorisation": res.user.auth.accessToken }});
+        ReusableWebSocket.connect();
       } else {
         // Placeholder.
         login("");
@@ -37,6 +43,8 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
       if (user) {
         login(user.auth.idToken);
+        ReusableWebSocket.setHeaders({"headers" : { "authorisation": user.auth.accessToken }});
+        ReusableWebSocket.connect();
       }
     })();
   });
