@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { StyleSheet, TouchableHighlight } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
-import ReusableWebSocket from "../util/ReusableWebSocket";
+import ws from "../util/ReusableWebSocket";
 
 const LOCATION_TASK = "background-location-task";
 
@@ -71,14 +71,15 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
   } else if (data) {
     console.log(data.locations);
     // format the server expects
-    let cycData = {
-      "type": "cyclist",
-      "long": data.locations[0].coords.longitude,
-      "lat": data.locations[0].coords.latitude,
-      "direction": "2",
-      "speed": "30"
-    }
-    ReusableWebSocket.send(cycData);
+    const cycData = {
+      type: "cyclist",
+      long: data.locations[0].coords.longitude,
+      lat: data.locations[0].coords.latitude,
+      direction: "2",
+      speed: "30"
+    };
+
+    ws.send(cycData);
   } else {
     console.log("no data");
   }

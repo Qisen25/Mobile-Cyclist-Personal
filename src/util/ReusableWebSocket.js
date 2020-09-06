@@ -1,4 +1,5 @@
 const events = ["open", "close", "message", "error"];
+
 /**
  * Singleton web socket class
  * Modify if any issues occur
