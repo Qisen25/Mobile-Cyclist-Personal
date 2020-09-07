@@ -21,12 +21,12 @@ export default function GoogleLoginButton({ title, login, ...props }) {
       const res = await GoogleSignIn.signInAsync();
 
       if (res.type === "success") {
+        console.log(res.user);
+
         login(res.user.auth.idToken);
         // Using access_token for server auth coz idtoken shows up as null for me...
         // and access token probs suitable coz we just use it to auth server connection
         // it doesn't have personal info like name, email about user by itself
-        ws.setHeaders({ headers: { authorisation: res.user.auth.accessToken } });
-        ws.connect();
       } else {
         // Placeholder.
         login("");
@@ -38,13 +38,15 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
   useEffect(() => {
     (async () => {
-      await GoogleSignIn.initAsync();
+      await GoogleSignIn.initAsync({
+        webClientId: "696826026859-sumcdf4qgaq69840vd3470b3gdtut883.apps.googleusercontent.com"
+      });
       const user = await GoogleSignIn.signInSilentlyAsync();
 
       if (user) {
+        console.log(user.auth);
+
         login(user.auth.idToken);
-        ws.setHeaders({ headers: { authorisation: user.auth.accessToken } });
-        ws.connect();
       }
     })();
   });

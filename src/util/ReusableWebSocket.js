@@ -27,16 +27,16 @@ export class ReusableWebSocket {
       }
     }, 5);
 
-    this.ws.onclose = () => {
+    this.ws.addEventListener("close", () => {
       console.log("Socket is closed");
       // Allow reconnection attempts if client is authorised.
       if (this.attemptReconnect === true) {
         console.log("Socket trying to reconnect");
         setTimeout(() => this.connect(), 3000);
       }
-    };
+    });
 
-    this.ws.onerror = error => {
+    this.ws.addEventListener("error", error => {
       // Server will return an error with 401 Unauthorised to indicate invalid info.
       console.log(error);
       if (error.message.includes("401 Unauthorised")) {
@@ -48,7 +48,7 @@ export class ReusableWebSocket {
         console.log("Cannot reach server");
         this.attemptReconnect = true;
       }
-    };
+    });
   }
 
   /**
@@ -60,8 +60,15 @@ export class ReusableWebSocket {
     this.ws.send(JSON.stringify(data));
   }
 
+  /**
+   * Closes the websocket.
+   */
   close() {
     this.ws.close();
+  }
+
+  addEventListener(event, fn) {
+    this.ws.addEventListener(event, fn);
   }
 
   /**
@@ -70,14 +77,6 @@ export class ReusableWebSocket {
    */
   setHeaders(options) {
     this.options = options;
-  }
-
-  on(event, fn) {
-    if (events.includes(event)) {
-      this.ws[`on${event}`] = fn;
-    } else {
-      throw new Error(`Event '${event}' is not supported.`);
-    }
   }
 }
 

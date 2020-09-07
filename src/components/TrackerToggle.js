@@ -79,7 +79,7 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
       speed: "30"
     };
 
-    ws.send(cycData);
+    //ws.send(cycData);
   } else {
     console.log("no data");
   }
