@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import AuthenticationContext from "./src/contexts/AuthenticationContext";
+import ws from "./src/util/ReusableWebSocket";
 
 const Stack = createStackNavigator();
 
@@ -34,9 +35,16 @@ export default function App() {
 
   // To be passed to the various login buttons.
   const authContext = useMemo(() => ({
-    login(data) {
-      // Placeholder.
+    login(token) {
+      console.log(token);
+
       dispatch({ type: "LOGIN", user: { id: "0" } });
+      // ws.setHeaders({ headers: { authorisation: token } });
+      // ws.connect();
+
+      // ws.addEventListener("open", () => {
+      //  dispatch({ type: "LOGIN", user: { id: "0" } });
+      // });
     },
     logout() {
       dispatch({ type: "LOGOUT" });
