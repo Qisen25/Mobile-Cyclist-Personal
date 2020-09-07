@@ -9,7 +9,7 @@ export class ReusableWebSocket {
     this.url = url;
     this.options = null;
     this.ws = null;
-    // if authorised allow for reconnection
+    // If authorised allow for reconnection.
     this.attemptReconnect = false;
   }
 
@@ -17,39 +17,34 @@ export class ReusableWebSocket {
    * Setup and connect to receiving web service
    */
   connect() {
-    // if (this.ws) {
-    //   this.ws.close();
-    // }
-
-    // imports: url, protocol, other(headers etc.)
+    // Imports: url, protocol, other (headers etc.).
     this.ws = new WebSocket(this.url, "", this.options);
 
-    // timeout a little to make sure websocket fully connects
+    // Timeout a little to make sure websocket fully connects.
     setTimeout(() => {
-      if(this.ws.readyState === WebSocket.OPEN){
+      if (this.ws.readyState === WebSocket.OPEN) {
         this.attemptReconnect = true;
-        return;
       }
     }, 5);
 
     this.ws.onclose = () => {
       console.log("Socket is closed");
-      // allow reconnection attempts if client is authorised
-      if(this.attemptReconnect == true){
+      // Allow reconnection attempts if client is authorised.
+      if (this.attemptReconnect === true) {
         console.log("Socket trying to reconnect");
-            setTimeout(() => {this.connect()}, 3000);
+        setTimeout(() => this.connect(), 3000);
       }
     };
 
-    this.ws.onerror= (error) => {
-      // server will return an error with 401 Unauthorised to indicate invalid info
+    this.ws.onerror = error => {
+      // Server will return an error with 401 Unauthorised to indicate invalid info.
       console.log(error);
-      if (error.message.includes("401 Unauthorised")){
+      if (error.message.includes("401 Unauthorised")) {
         console.log("User access token invalid!");
-        // ... somehow send user back to login screen or something
+        // ... somehow send user back to login screen or something.
         this.attemptReconnect = false;
       } else {
-        // ... somehow indicate this cant reach server
+        // ... somehow indicate this cant reach server.
         console.log("Cannot reach server");
         this.attemptReconnect = true;
       }
@@ -59,13 +54,13 @@ export class ReusableWebSocket {
   /**
    * Sends data to the receiving web service
    * also converts json to string before sending
-   * @param {JSON} data 
+   * @param {JSON} data
    */
-  send(data){
+  send(data) {
     this.ws.send(JSON.stringify(data));
   }
 
-  close(){
+  close() {
     this.ws.close();
   }
 
@@ -73,7 +68,7 @@ export class ReusableWebSocket {
    * Set headers for the web socket connection
    * @param {string} options - headers which can be used to carry auth info
    */
-  setHeaders(options){
+  setHeaders(options) {
     this.options = options;
   }
 
@@ -86,10 +81,11 @@ export class ReusableWebSocket {
   }
 }
 
-// singleton class - don't know a way better than singleton atm
+// Singleton class - don't know a way better than singleton atm
 export default new ReusableWebSocket("https://labs2.amristar.com/rws");
 
-// Example for on event close(): auto Reconnecting web socket 
+// Example for on event close(): auto Reconnecting web socket.
+
 // console.log('Socket is closed. Trying to reconnect);
 //     setTimeout(function() {
 //       ws.connect();
