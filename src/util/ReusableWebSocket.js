@@ -1,4 +1,5 @@
 const events = ["open", "close", "message", "error"];
+
 /**
  * Singleton web socket class
  * Modify if any issues occur
@@ -43,12 +44,11 @@ export class ReusableWebSocket {
     this.ws.onerror= (error) => {
       // server will return an error with 401 Unauthorised to indicate invalid info
       console.log(error);
-      if(error.message.includes("401 Unauthorised")){
+      if (error.message.includes("401 Unauthorised")){
         console.log("User access token invalid!");
         // ... somehow send user back to login screen or something
         this.attemptReconnect = false;
-      }
-      else{
+      } else {
         // ... somehow indicate this cant reach server
         console.log("Cannot reach server");
         this.attemptReconnect = true;
