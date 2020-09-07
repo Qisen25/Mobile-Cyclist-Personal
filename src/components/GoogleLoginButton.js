@@ -22,10 +22,10 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
       if (res.type === "success") {
         login(res.user.auth.idToken);
-        // using access_token for server auth coz idtoken shows up as null for me...
+        // Using access_token for server auth coz idtoken shows up as null for me...
         // and access token probs suitable coz we just use it to auth server connection
         // it doesn't have personal info like name, email about user by itself
-        ws.setHeaders({"headers" : { "authorisation": res.user.auth.accessToken }});
+        ws.setHeaders({ headers: { authorisation: res.user.auth.accessToken } });
         ws.connect();
       } else {
         // Placeholder.
@@ -43,7 +43,7 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
       if (user) {
         login(user.auth.idToken);
-        ws.setHeaders({"headers" : { "authorisation": user.auth.accessToken }});
+        ws.setHeaders({ headers: { authorisation: user.auth.accessToken } });
         ws.connect();
       }
     })();
