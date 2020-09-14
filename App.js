@@ -21,12 +21,14 @@ export default function App() {
       case "LOGIN":
         return {
           ...prevState,
-          user: action.user
+          user: action.user,
+          platform: action.platform
         };
       case "LOGOUT":
         return {
           ...prevState,
-          user: null
+          user: null,
+          platform: null
         };
     }
   }, {
@@ -34,17 +36,14 @@ export default function App() {
   });
 
   // To be passed to the various login buttons.
-  const authContext = useMemo(() => ({
-    login(token) {
-      console.log(token);
+  const actions = useMemo(() => ({
+    login(platform, token) {
+      ws.setHeaders({ headers: { authorisation: token } });
+      ws.connect();
 
-      dispatch({ type: "LOGIN", user: { id: "0" } });
-      // ws.setHeaders({ headers: { authorisation: token } });
-      // ws.connect();
-
-      // ws.addEventListener("open", () => {
-      //  dispatch({ type: "LOGIN", user: { id: "0" } });
-      // });
+      ws.addEventListener("open", data => {
+        dispatch({ type: "LOGIN", user: { id: "0" } });
+      });
     },
     logout() {
       dispatch({ type: "LOGOUT" });
@@ -52,7 +51,7 @@ export default function App() {
   }), []);
 
   return (
-    <AuthenticationContext.Provider value={authContext}>
+    <AuthenticationContext.Provider value={{ actions, state }}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           { state.user === null ?

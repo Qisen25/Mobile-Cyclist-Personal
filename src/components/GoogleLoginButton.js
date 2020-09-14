@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import { SocialIcon } from "react-native-elements";
 import * as GoogleSignIn from "expo-google-sign-in";
 import ws from "../util/ReusableWebSocket";
+import Constant from "../util/Constant";
 
 /**
  * Component for logging in using Google.
@@ -23,7 +24,7 @@ export default function GoogleLoginButton({ title, login, ...props }) {
       if (res.type === "success") {
         console.log(res.user);
 
-        login(res.user.auth.idToken);
+        login(Constant.Platform.GOOGLE, res.user.auth.idToken);
         // Using access_token for server auth coz idtoken shows up as null for me...
         // and access token probs suitable coz we just use it to auth server connection
         // it doesn't have personal info like name, email about user by itself
