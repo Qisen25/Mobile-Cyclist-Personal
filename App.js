@@ -2,10 +2,13 @@ import React, { useReducer, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as GoogleSignIn from "expo-google-sign-in";
 import LoginScreen from "./src/screens/LoginScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import AuthenticationContext from "./src/contexts/AuthenticationContext";
 import ws from "./src/util/ReusableWebSocket";
+import Constant from "./src/util/Constant";
+
 
 const Stack = createStackNavigator();
 
@@ -21,12 +24,14 @@ export default function App() {
       case "LOGIN":
         return {
           ...prevState,
-          user: action.user
+          user: action.user,
+          platform: action.platform
         };
       case "LOGOUT":
         return {
           ...prevState,
-          user: null
+          user: null,
+          platform: null
         };
     }
   }, {
@@ -34,25 +39,27 @@ export default function App() {
   });
 
   // To be passed to the various login buttons.
-  const authContext = useMemo(() => ({
-    login(token) {
-      console.log(token);
+  const actions = useMemo(() => ({
+    login(platform, token) {
+      ws.setHeaders({ headers: { authorisation: token } });
+      ws.connect();
 
-      dispatch({ type: "LOGIN", user: { id: "0" } });
-      // ws.setHeaders({ headers: { authorisation: token } });
-      // ws.connect();
-
-      // ws.addEventListener("open", () => {
-      //  dispatch({ type: "LOGIN", user: { id: "0" } });
-      // });
+      ws.addEventListener("open", data => {
+        dispatch({ type: "LOGIN", user: { id: "0" }, platform });
+      });
     },
-    logout() {
+    async logout(platform) {
+      console.log(platform === Constant.Platform.GOOGLE);
+      if (platform === Constant.Platform.GOOGLE) {
+        await GoogleSignIn.signOutAsync();
+      }
+
       dispatch({ type: "LOGOUT" });
     }
   }), []);
 
   return (
-    <AuthenticationContext.Provider value={authContext}>
+    <AuthenticationContext.Provider value={{ actions, state }}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           { state.user === null ?

@@ -21,7 +21,7 @@ export default function LoginScreen() {
         <GoogleSignInButton
           title="Sign In With Google"
           style={styles.google}
-          login={authContext.login}
+          login={authContext.actions.login}
         />
         <SocialIcon
           button
