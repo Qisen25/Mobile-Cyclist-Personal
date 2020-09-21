@@ -39,18 +39,20 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
   useEffect(() => {
     (async () => {
+      console.log("wow");
       await GoogleSignIn.initAsync({
         webClientId: "696826026859-sumcdf4qgaq69840vd3470b3gdtut883.apps.googleusercontent.com"
       });
+
       const user = await GoogleSignIn.signInSilentlyAsync();
 
       if (user) {
         console.log(user.auth);
 
-        login(user.auth.idToken);
+        login(Constant.Platform.GOOGLE, user.auth.idToken);
       }
     })();
-  });
+  }, []);
 
   return (
     <SocialIcon

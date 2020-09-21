@@ -2,10 +2,13 @@ import React, { useReducer, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as GoogleSignIn from "expo-google-sign-in";
 import LoginScreen from "./src/screens/LoginScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import AuthenticationContext from "./src/contexts/AuthenticationContext";
 import ws from "./src/util/ReusableWebSocket";
+import Constant from "./src/util/Constant";
+
 
 const Stack = createStackNavigator();
 
@@ -42,10 +45,15 @@ export default function App() {
       ws.connect();
 
       ws.addEventListener("open", data => {
-        dispatch({ type: "LOGIN", user: { id: "0" } });
+        dispatch({ type: "LOGIN", user: { id: "0" }, platform });
       });
     },
-    logout() {
+    async logout(platform) {
+      console.log(platform === Constant.Platform.GOOGLE);
+      if (platform === Constant.Platform.GOOGLE) {
+        await GoogleSignIn.signOutAsync();
+      }
+
       dispatch({ type: "LOGOUT" });
     }
   }), []);

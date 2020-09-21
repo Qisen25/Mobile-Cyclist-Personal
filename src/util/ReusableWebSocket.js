@@ -39,7 +39,7 @@ export class ReusableWebSocket {
     this.ws.addEventListener("error", error => {
       // Server will return an error with 401 Unauthorised to indicate invalid info.
       console.log(error);
-      if (error?.message.includes("401 Unauthorised")) {
+      if (error.message?.includes("401 Unauthorised")) {
         console.log("User access token invalid!");
         // ... somehow send user back to login screen or something.
         this.attemptReconnect = false;
