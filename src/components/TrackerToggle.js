@@ -30,6 +30,8 @@ export default function TrackerToggle(props) {
 
       setEnabled(false);
     } else {
+      setEnabled(true);
+
       const { status } = await Location.requestPermissionsAsync();
 
       if (status === "granted") {
@@ -40,8 +42,8 @@ export default function TrackerToggle(props) {
             notificationBody: notificationBody
           }
         });
-
-        setEnabled(true);
+      } else {
+        setEnabled(false);
       }
     }
   };
@@ -49,7 +51,7 @@ export default function TrackerToggle(props) {
   useEffect(() => onToggle(enabled), [enabled]);
 
   return (
-    <TouchableOpacity onPress={onPress} {...rest}>
+    <TouchableOpacity activeOpacity={1} onPress={onPress} {...rest}>
       {children}
     </TouchableOpacity>
   );
