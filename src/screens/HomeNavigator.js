@@ -2,17 +2,17 @@ import React from "react";
 import { Icon } from "react-native-elements";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import TrackerScreen from "./TrackerScreen";
-import AccountScreen from "./AccountScreen";
+import AccountNavigator from "./AccountNavigator";
 
 const Tab = createMaterialBottomTabNavigator();
 
 /**
- * Component for the Home screen, which navigates
- * between the tracking and sccount screens.
+ * Component for the Home navigator, which navigates
+ * between the tracking and account screens.
  *
  * @component
  */
-export default function HomeScreen() {
+export default function HomeNavigator() {
   return (
     <Tab.Navigator
       shifting
@@ -32,7 +32,7 @@ export default function HomeScreen() {
       })}
     >
       <Tab.Screen options={{ tabBarColor: "#127bd6" }} name="Tracker" component={TrackerScreen} />
-      <Tab.Screen options={{ tabBarColor: "purple" }} name="Account" component={AccountScreen} />
+      <Tab.Screen options={{ tabBarColor: "purple" }} name="Account" component={AccountNavigator} />
     </Tab.Navigator>
   );
 }

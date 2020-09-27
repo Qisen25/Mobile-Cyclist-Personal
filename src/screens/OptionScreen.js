@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import PropTypes from "prop-types";
+import { Linking, StyleSheet, View } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 
@@ -8,21 +9,30 @@ import AuthenticationContext from "../contexts/AuthenticationContext";
  *
  * @component
  */
-export default function AccountScreen() {
+export default function OptionScreen({ navigation }) {
   const auth = useContext(AuthenticationContext);
 
   const list = [
     {
       title: "Profile",
-      icon: "face"
+      icon: "face",
+      onPress() {
+        navigation.navigate("Profile");
+      }
     },
     {
       title: "About",
-      icon: "info"
+      icon: "info",
+      onPress() {
+        Linking.openURL("https://expektus.io/about");
+      }
     },
     {
       title: "Help",
-      icon: "help"
+      icon: "help",
+      onPress() {
+        Linking.openURL("https://expektus.io/help");
+      }
     },
     {
       title: "Logout",
@@ -49,6 +59,10 @@ export default function AccountScreen() {
     </View>
   );
 }
+
+OptionScreen.propTypes = {
+  navigation: PropTypes.object.isRequired
+};
 
 const styles = StyleSheet.create({
   container: {
