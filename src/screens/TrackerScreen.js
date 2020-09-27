@@ -20,12 +20,11 @@ export default function TrackerScreen() {
         accuracy={TrackerToggle.Accuracy.Highest}
         notificationTitle="Location Tracking"
         notificationBody="Expektus is tracking your location."
+        style={[styles.trackerButton, { backgroundColor: enabled ? "tomato" : "forestgreen" }]}
       >
-        <View style={[styles.trackerButton, { backgroundColor: enabled ? "tomato" : "forestgreen" }]}>
           <Text style={styles.trackerButtonText}>
             { enabled ? "Disable" : "Enable" }
           </Text>
-        </View>
       </TrackerToggle>
     </View>
   );
@@ -35,12 +34,14 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
+    padding: 16
   },
   trackerButton: {
-    height: 70,
+    height: 60,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    borderRadius: 30
   },
   trackerButtonText: {
     color: "#ffffff",

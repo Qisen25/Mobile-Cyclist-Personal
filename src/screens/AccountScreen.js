@@ -4,21 +4,25 @@ import { ListItem, Icon } from "react-native-elements";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 
 /**
- * Component for the settings screen.
+ * Component for the account screen.
  *
  * @component
  */
-export default function SettingsScreen() {
+export default function AccountScreen() {
   const auth = useContext(AuthenticationContext);
 
   const list = [
     {
       title: "Profile",
-      icon: "account-box"
+      icon: "face"
     },
     {
       title: "About",
       icon: "info"
+    },
+    {
+      title: "Help",
+      icon: "help"
     },
     {
       title: "Logout",

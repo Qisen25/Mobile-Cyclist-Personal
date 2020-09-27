@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, TouchableHighlight } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import ws from "../util/ReusableWebSocket";
@@ -49,9 +49,9 @@ export default function TrackerToggle(props) {
   useEffect(() => onToggle(enabled), [enabled]);
 
   return (
-    <TouchableHighlight onPress={onPress} {...rest}>
+    <TouchableOpacity onPress={onPress} {...rest}>
       {children}
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 }
 

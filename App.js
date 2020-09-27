@@ -49,7 +49,6 @@ export default function App() {
       });
     },
     async logout(platform) {
-      console.log(platform === Constant.Platform.GOOGLE);
       if (platform === Constant.Platform.GOOGLE) {
         await GoogleSignIn.signOutAsync();
       }

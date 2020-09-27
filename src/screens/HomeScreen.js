@@ -2,13 +2,13 @@ import React from "react";
 import { Icon } from "react-native-elements";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import TrackerScreen from "./TrackerScreen";
-import SettingsScreen from "./SettingsScreen";
+import AccountScreen from "./AccountScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 
 /**
  * Component for the Home screen, which navigates
- * between the tracking and settings screens.
+ * between the tracking and sccount screens.
  *
  * @component
  */
@@ -22,17 +22,17 @@ export default function HomeScreen() {
           let iconName;
 
           if (route.name === "Tracker") {
-            iconName = "globe";
-          } else if (route.name === "Settings") {
-            iconName = "cog";
+            iconName = "track-changes";
+          } else if (route.name === "Account") {
+            iconName = "account-circle";
           }
 
-          return <Icon type="font-awesome-5" name={iconName} color={color} size={size}/>;
+          return <Icon type="material" name={iconName} color={color} size={size}/>;
         }
       })}
     >
       <Tab.Screen options={{ tabBarColor: "#127bd6" }} name="Tracker" component={TrackerScreen} />
-      <Tab.Screen options={{ tabBarColor: "purple" }} name="Settings" component={SettingsScreen} />
+      <Tab.Screen options={{ tabBarColor: "purple" }} name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
 }
