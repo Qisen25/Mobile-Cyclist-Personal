@@ -22,15 +22,9 @@ export default function GoogleLoginButton({ title, login, ...props }) {
       const res = await GoogleSignIn.signInAsync();
 
       if (res.type === "success") {
-        console.log(res.user);
-
         login(Constant.Platform.GOOGLE, res.user.auth.idToken);
-        // Using access_token for server auth coz idtoken shows up as null for me...
-        // and access token probs suitable coz we just use it to auth server connection
-        // it doesn't have personal info like name, email about user by itself
       } else {
-        // Placeholder.
-        login("");
+        setAuthenticating(false);
       }
     } catch (err) {
       setAuthenticating(false);
@@ -39,7 +33,6 @@ export default function GoogleLoginButton({ title, login, ...props }) {
 
   useEffect(() => {
     (async () => {
-      console.log("wow");
       await GoogleSignIn.initAsync({
         webClientId: "696826026859-sumcdf4qgaq69840vd3470b3gdtut883.apps.googleusercontent.com"
       });
@@ -47,8 +40,6 @@ export default function GoogleLoginButton({ title, login, ...props }) {
       const user = await GoogleSignIn.signInSilentlyAsync();
 
       if (user) {
-        console.log(user.auth);
-
         login(Constant.Platform.GOOGLE, user.auth.idToken);
       }
     })();
@@ -58,6 +49,7 @@ export default function GoogleLoginButton({ title, login, ...props }) {
     <SocialIcon
       button
       type="google"
+      loading={authenticating}
       title={title}
       style={styles.google}
       onPress={onPress}

@@ -6,7 +6,7 @@ import * as GoogleSignIn from "expo-google-sign-in";
 import LoginScreen from "./src/screens/LoginScreen";
 import HomeNavigator from "./src/screens/HomeNavigator";
 import AuthenticationContext from "./src/contexts/AuthenticationContext";
-import ws from "./src/util/ReusableWebSocket";
+import ws from "./src/util/ws";
 import Constant from "./src/util/Constant";
 
 
@@ -56,7 +56,7 @@ export default function App() {
         platform
       });
 
-      ws.addEventListener("open", data => {
+      ws.on("open", data => {
         console.log("open");
       });
     },
@@ -68,6 +68,8 @@ export default function App() {
       dispatch({ type: "LOGOUT" });
     }
   }), []);
+
+  console.log(state.user);
 
   return (
     <AuthenticationContext.Provider value={{ actions, state }}>

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
-import ws from "../util/ReusableWebSocket";
+import ws from "../util/ws";
 
 const LOCATION_TASK = "background-location-task";
 
