@@ -51,7 +51,7 @@ export default function TrackerToggle(props) {
   useEffect(() => onToggle(enabled), [enabled]);
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={onPress} {...rest}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} {...rest}>
       {children}
     </TouchableOpacity>
   );
