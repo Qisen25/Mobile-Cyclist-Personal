@@ -40,7 +40,7 @@ export default class ReusableWebSocket extends EventEmitter {
     this.ws.addEventListener("close", e => {
       this.emit("close", e);
 
-      console.log("Socket is closed");
+      console.log("Socket is closed", e);
       // Allow reconnection attempts if client is authorised.
       if (this.attemptReconnect === true) {
         console.log("Socket trying to reconnect");

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Linking } from "react-native";
 import { Text } from "react-native-elements";
+import Timer from "../components/Timer";
 import TrackerToggle from "../components/TrackerToggle";
 
 /**
@@ -15,9 +16,12 @@ export default function TrackerScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.timerContainer}>
+        <Timer style={styles.timer} start={enabled} />
+      </View>
       <TrackerToggle
         onToggle={onToggle}
-        accuracy={TrackerToggle.Accuracy.Highest}
+        accuracy={TrackerToggle.Accuracy.BestForNavigation}
         distanceInterval={1}
         notificationTitle="Location Tracking"
         notificationBody="Expektus is tracking your location."
@@ -34,15 +38,23 @@ export default function TrackerScreen() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "100%",
-    justifyContent: "flex-end",
-    padding: 16
+    height: "100%"
   },
-  trackerButton: {
-    height: 60,
+  timerContainer: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30
+    flex: 1
+  },
+  timer: {
+    fontSize: 48
+  },
+  trackerButton: {
+    width: "100%",
+    height: 80,
+    position: "absolute",
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center"
   },
   trackerButtonText: {
     color: "#ffffff",
