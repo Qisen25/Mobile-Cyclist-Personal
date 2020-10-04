@@ -16,7 +16,7 @@ export default function AccountNavigator() {
   return (
     <Stack.Navigator initialRouteName="Option">
       <Stack.Screen
-        options={{ headerShown: false }}
+        options={{ headerTitle: "Account" }}
         name="Option"
         component={OptionScreen}
       />
