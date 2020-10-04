@@ -16,6 +16,8 @@ export default function TrackerToggle(props) {
   const {
     onToggle,
     accuracy,
+    timeInterval,
+    distanceInterval,
     notificationTitle,
     notificationBody,
     children,
@@ -36,10 +38,12 @@ export default function TrackerToggle(props) {
 
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
-          accuracy: accuracy,
+          accuracy,
+          timeInterval,
+          distanceInterval,
           foregroundService: {
-            notificationTitle: notificationTitle,
-            notificationBody: notificationBody
+            notificationTitle,
+            notificationBody
           }
         });
       } else {
@@ -60,6 +64,8 @@ export default function TrackerToggle(props) {
 TrackerToggle.propTypes = {
   onToggle: PropTypes.func.isRequired,
   accuracy: PropTypes.number.isRequired,
+  timeInterval: PropTypes.number,
+  distanceInterval: PropTypes.number,
   notificationTitle: PropTypes.string.isRequired,
   notificationBody: PropTypes.string.isRequired,
   children: PropTypes.any
@@ -72,16 +78,24 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
     console.log(error);
   } else if (data) {
     console.log(data.locations);
-    // Format the server expects.
-    const cycData = {
-      type: "cyclist",
-      long: data.locations[0].coords.longitude,
-      lat: data.locations[0].coords.latitude,
-      direction: "2",
-      speed: "30"
-    };
 
-    //ws.send(cycData);
+    // Format the server expects.
+    if (data.locations.length >= 1) {
+      const location = data.locations[0];
+      const cycData = {
+        type: "cyclist",
+        long: location.longitude,
+        lat: location.coords.latitude,
+        direction: location.heading,
+        speed: location.speed
+      };
+
+      try {
+        ws.send(cycData);
+      } catch (err) {
+        console.log(err);
+      }
+    }
   } else {
     console.log("no data");
   }
