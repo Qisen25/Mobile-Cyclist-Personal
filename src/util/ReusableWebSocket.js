@@ -49,7 +49,12 @@ export default class ReusableWebSocket extends EventEmitter {
     });
 
     this.ws.addEventListener("error", err => {
-      this.emit("error", err);
+      // Error msg is usually empty for unless msg written to socket
+      const errMsg = err.message ? err.message : "Cannot reach server"
+      // Fixed bug, "error" not valid string for 1st param
+      // This is possibly reserved and used by the eventEmitter
+      // Thus auto reconnect below did not work
+      this.emit("connectionError", errMsg); 
 
       // Server will return an error with 401 Unauthorised to indicate invalid info.
       console.log(err);
