@@ -14,6 +14,7 @@ export default class ReusableWebSocket extends EventEmitter {
     // If authorised allow for reconnection.
     this.attemptReconnect = false;
     this.delay = 0;
+    this.profile = null;
   }
 
   /**
@@ -34,8 +35,21 @@ export default class ReusableWebSocket extends EventEmitter {
       }
     }, 5);
 
-    this.ws.addEventListener("open", event => this.emit("open", event));
-    this.ws.addEventListener("message", message => this.emit("message", message));
+    this.ws.addEventListener("open", event => { 
+      this.emit("open", event); 
+      this.send({ type: "profile"});
+    });
+
+    this.ws.addEventListener("message", message => { 
+      let data = JSON.parse(message.data);
+      this.emit("message", message);
+      console.log("Received message")
+      // IF receive profile data, store it for later use
+      if(data.type === "profile") {
+        console.log("Received profile")
+        this.profile = data;
+      }
+    });
 
     this.ws.addEventListener("close", event => {
       this.emit("close", event);
