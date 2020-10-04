@@ -42,6 +42,7 @@ export default function App() {
   const actions = useMemo(() => ({
     login(platform, token) {
       ws.setHeaders({ headers: { authorisation: token } });
+      console.log("oo");
       ws.connect();
 
       dispatch({
@@ -56,8 +57,8 @@ export default function App() {
         platform
       });
 
-      ws.on("open", data => {
-        console.log("open");
+      ws.once("open", event => {
+        console.log("Open: ", event);
       });
     },
     async logout(platform) {
@@ -65,11 +66,11 @@ export default function App() {
         await GoogleSignIn.signOutAsync();
       }
 
+      ws.close();
+
       dispatch({ type: "LOGOUT" });
     }
   }), []);
-
-  console.log(state.user);
 
   return (
     <AuthenticationContext.Provider value={{ actions, state }}>
