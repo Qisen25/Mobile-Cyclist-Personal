@@ -4,9 +4,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as GoogleSignIn from "expo-google-sign-in";
 import LoginScreen from "./src/screens/LoginScreen";
-import HomeScreen from "./src/screens/HomeScreen";
+import HomeNavigator from "./src/screens/HomeNavigator";
 import AuthenticationContext from "./src/contexts/AuthenticationContext";
-import ws from "./src/util/ReusableWebSocket";
+import ws from "./src/util/ws";
 import Constant from "./src/util/Constant";
 
 
@@ -42,17 +42,31 @@ export default function App() {
   const actions = useMemo(() => ({
     login(platform, token) {
       ws.setHeaders({ headers: { authorisation: token } });
+      console.log("oo");
       ws.connect();
 
-      ws.addEventListener("open", data => {
-        dispatch({ type: "LOGIN", user: { id: "0" }, platform });
+      dispatch({
+        type: "LOGIN",
+        user: {
+          id: "0",
+          email: "damonezard@gmail.com",
+          firstName: "Damon",
+          lastName: "Ezard",
+          photoURL: "https://picsum.photos/200"
+        },
+        platform
+      });
+
+      ws.once("open", event => {
+        console.log("Open: ", event);
       });
     },
     async logout(platform) {
-      console.log(platform === Constant.Platform.GOOGLE);
       if (platform === Constant.Platform.GOOGLE) {
         await GoogleSignIn.signOutAsync();
       }
+
+      ws.close();
 
       dispatch({ type: "LOGOUT" });
     }
@@ -65,7 +79,7 @@ export default function App() {
           { state.user === null ?
             <Stack.Screen name="Login" component={LoginScreen} />
             :
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Home" component={HomeNavigator} />
           }
         </Stack.Navigator>
       </NavigationContainer>

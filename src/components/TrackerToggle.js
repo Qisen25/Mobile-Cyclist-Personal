@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, TouchableHighlight } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
-import ws from "../util/ReusableWebSocket";
+import ws from "../util/ws";
 
 const LOCATION_TASK = "background-location-task";
 
@@ -16,6 +16,8 @@ export default function TrackerToggle(props) {
   const {
     onToggle,
     accuracy,
+    timeInterval,
+    distanceInterval,
     notificationTitle,
     notificationBody,
     children,
@@ -30,18 +32,22 @@ export default function TrackerToggle(props) {
 
       setEnabled(false);
     } else {
+      setEnabled(true);
+
       const { status } = await Location.requestPermissionsAsync();
 
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
-          accuracy: accuracy,
+          accuracy,
+          timeInterval,
+          distanceInterval,
           foregroundService: {
-            notificationTitle: notificationTitle,
-            notificationBody: notificationBody
+            notificationTitle,
+            notificationBody
           }
         });
-
-        setEnabled(true);
+      } else {
+        setEnabled(false);
       }
     }
   };
@@ -49,15 +55,17 @@ export default function TrackerToggle(props) {
   useEffect(() => onToggle(enabled), [enabled]);
 
   return (
-    <TouchableHighlight onPress={onPress} {...rest}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} {...rest}>
       {children}
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 }
 
 TrackerToggle.propTypes = {
   onToggle: PropTypes.func.isRequired,
   accuracy: PropTypes.number.isRequired,
+  timeInterval: PropTypes.number,
+  distanceInterval: PropTypes.number,
   notificationTitle: PropTypes.string.isRequired,
   notificationBody: PropTypes.string.isRequired,
   children: PropTypes.any
@@ -70,16 +78,24 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
     console.log(error);
   } else if (data) {
     console.log(data.locations);
-    // Format the server expects.
-    const cycData = {
-      type: "cyclist",
-      long: data.locations[0].coords.longitude,
-      lat: data.locations[0].coords.latitude,
-      direction: "2",
-      speed: "30"
-    };
 
-    //ws.send(cycData);
+    // Format the server expects.
+    if (data.locations.length >= 1) {
+      const location = data.locations[0];
+      const cycData = {
+        type: "cyclist",
+        long: location.longitude,
+        lat: location.coords.latitude,
+        direction: location.heading,
+        speed: location.speed
+      };
+
+      try {
+        ws.send(cycData);
+      } catch (err) {
+        console.log(err);
+      }
+    }
   } else {
     console.log("no data");
   }

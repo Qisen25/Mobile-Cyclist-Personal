@@ -15,7 +15,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image style={styles.logo} source={require("../../assets/expektus-logo.png")} />
+        <Image style={styles.logo} source={require("../../assets/expektus-logo-v2.png")} />
       </View>
       <View style={styles.buttonsContainer}>
         <GoogleSignInButton

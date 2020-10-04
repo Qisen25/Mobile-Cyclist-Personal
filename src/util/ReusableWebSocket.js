@@ -1,22 +1,29 @@
-const events = ["open", "close", "message", "error"];
+import { EventEmitter } from "events";
 
 /**
  * Singleton web socket class
  * Modify if any issues occur
  */
-export class ReusableWebSocket {
+export default class ReusableWebSocket extends EventEmitter {
   constructor(url) {
+    super();
+
     this.url = url;
     this.options = null;
     this.ws = null;
     // If authorised allow for reconnection.
     this.attemptReconnect = false;
+    this.delay = 0;
   }
 
   /**
    * Setup and connect to receiving web service
    */
   connect() {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.close();
+    }
+
     // Imports: url, protocol, other (headers etc.).
     this.ws = new WebSocket(this.url, "", this.options);
 
@@ -27,8 +34,13 @@ export class ReusableWebSocket {
       }
     }, 5);
 
-    this.ws.addEventListener("close", () => {
-      console.log("Socket is closed");
+    this.ws.addEventListener("open", event => this.emit("open", event));
+    this.ws.addEventListener("message", message => this.emit("message", message));
+
+    this.ws.addEventListener("close", event => {
+      this.emit("close", event);
+
+      console.log("Socket is closed", event);
       // Allow reconnection attempts if client is authorised.
       if (this.attemptReconnect === true) {
         console.log("Socket trying to reconnect");
@@ -36,10 +48,12 @@ export class ReusableWebSocket {
       }
     });
 
-    this.ws.addEventListener("error", error => {
+    this.ws.addEventListener("error", err => {
+      this.emit("error", err);
+
       // Server will return an error with 401 Unauthorised to indicate invalid info.
-      console.log(error);
-      if (error.message?.includes("401 Unauthorised")) {
+      console.log(err);
+      if (err.message?.includes("401 Unauthorised")) {
         console.log("User access token invalid!");
         // ... somehow send user back to login screen or something.
         this.attemptReconnect = false;
@@ -57,7 +71,11 @@ export class ReusableWebSocket {
    * @param {JSON} data
    */
   send(data) {
-    this.ws?.send(JSON.stringify(data));
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(data));
+    } else {
+      throw new Error("WebSocket not open");
+    }
   }
 
   /**
@@ -65,10 +83,6 @@ export class ReusableWebSocket {
    */
   close() {
     this.ws?.close();
-  }
-
-  addEventListener(event, fn) {
-    this.ws?.addEventListener(event, fn);
   }
 
   /**
@@ -81,7 +95,7 @@ export class ReusableWebSocket {
 }
 
 // Singleton class - don't know a way better than singleton atm
-export default new ReusableWebSocket("https://labs2.amristar.com/rws");
+
 
 // Example for on event close(): auto Reconnecting web socket.
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Linking } from "react-native";
-import { Text } from "react-native-elements";
+import { StyleSheet, View, Text } from "react-native";
+import Timer from "../components/Timer";
 import TrackerToggle from "../components/TrackerToggle";
 
 /**
@@ -15,17 +15,23 @@ export default function TrackerScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>
+          {"Tracking Duration"}
+        </Text>
+        <Timer style={styles.timer} start={enabled} />
+      </View>
       <TrackerToggle
         onToggle={onToggle}
-        accuracy={TrackerToggle.Accuracy.Highest}
+        accuracy={TrackerToggle.Accuracy.BestForNavigation}
+        distanceInterval={1}
         notificationTitle="Location Tracking"
         notificationBody="Expektus is tracking your location."
+        style={[styles.trackerButton, { backgroundColor: enabled ? "tomato" : "forestgreen" }]}
       >
-        <View style={[styles.trackerButton, { backgroundColor: enabled ? "tomato" : "forestgreen" }]}>
           <Text style={styles.trackerButtonText}>
             { enabled ? "Disable" : "Enable" }
           </Text>
-        </View>
       </TrackerToggle>
     </View>
   );
@@ -34,11 +40,24 @@ export default function TrackerScreen() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: "100%",
-    justifyContent: "flex-end"
+    height: "100%"
+  },
+  timerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1
+  },
+  timerText: {
+    fontSize: 18
+  },
+  timer: {
+    fontSize: 48
   },
   trackerButton: {
-    height: 70,
+    width: "100%",
+    height: 80,
+    position: "absolute",
+    bottom: 0,
     justifyContent: "center",
     alignItems: "center"
   },
