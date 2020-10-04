@@ -84,10 +84,10 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
       const location = data.locations[0];
       const cycData = {
         type: "cyclist",
-        long: location.longitude,
+        long: location.coords.longitude,
         lat: location.coords.latitude,
-        direction: location.heading,
-        speed: location.speed
+        direction: location.coords.heading,
+        speed: location.coords.speed
       };
 
       try {
