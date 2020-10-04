@@ -45,21 +45,36 @@ export default function App() {
       console.log("oo");
       ws.connect();
 
-      dispatch({
-        type: "LOGIN",
-        user: {
-          id: "0",
-          email: "damonezard@gmail.com",
-          firstName: "Damon",
-          lastName: "Ezard",
-          photoURL: "https://picsum.photos/200"
-        },
-        platform
-      });
+     // On message websocket connects then able to retrieve profile info
+     // Im not expert with react native, soz if this is not convention but it works
+      ws.ws.onmessage = message => {
+        let data = JSON.parse(message.data);
 
-      ws.once("open", event => {
-        console.log("Open: ", event);
-      });
+        if (data.type === "profile") {
+          dispatch({
+            type: "LOGIN",
+            user: {
+              id: data.id,
+              email: data.email,
+              firstName: data.fname,
+              lastName: data.lname,
+              photoURL: data.photo
+            },
+            // user: {
+            //   id: "0",
+            //   email: "damonezard@gmail.com",
+            //   firstName: "Damon",
+            //   lastName: "Ezard",
+            //   photoURL: "https://picsum.photos/200"
+            // },
+            platform
+          });
+        }
+      }
+
+      // ws.once("open", event => {
+      //   console.log("Open: ", event);
+      // });
     },
     async logout(platform) {
       if (platform === Constant.Platform.GOOGLE) {
