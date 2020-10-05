@@ -6,6 +6,7 @@ import * as TaskManager from "expo-task-manager";
 import ws from "../util/ws";
 
 const LOCATION_TASK = "background-location-task";
+let watchPos = null;
 
 /**
  * Component for toggling background geolocation.
@@ -30,22 +31,52 @@ export default function TrackerToggle(props) {
     if (enabled) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK);
 
+      console.log("Disable streaming")
+      watchPos?.remove()
+      ws.send({ type: "remove" })
+
       setEnabled(false);
     } else {
       setEnabled(true);
-
+      console.log("Now streaming")
       const { status } = await Location.requestPermissionsAsync();
 
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval,
+          timeInterval: 0,
           distanceInterval,
           foregroundService: {
             notificationTitle,
             notificationBody
           }
         });
+
+        watchPos = await Location.watchPositionAsync(
+            {
+              accuracy,
+              timeInterval: 1200,
+              distanceInterval,
+            },
+            location => {
+                let coords = location.coords;
+                const cycData = {
+                  type: "cyclist",
+                  long: coords.longitude,
+                  lat: coords.latitude,
+                  direction: coords.heading,
+                  speed: coords.speed
+                };
+
+                try {
+                  ws.send(cycData);
+                } catch (err) {
+                  console.log(err);
+                }
+            },
+            error => console.log(error)
+        );
+
       } else {
         setEnabled(false);
       }

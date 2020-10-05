@@ -24,7 +24,7 @@ export default function TrackerScreen() {
       <TrackerToggle
         onToggle={onToggle}
         accuracy={TrackerToggle.Accuracy.BestForNavigation}
-        distanceInterval={1}
+        distanceInterval={0}
         notificationTitle="Location Tracking"
         notificationBody="Expektus is tracking your location."
         style={[styles.trackerButton, { backgroundColor: enabled ? "tomato" : "forestgreen" }]}
