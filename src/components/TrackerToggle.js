@@ -62,7 +62,6 @@ export default function TrackerToggle(props) {
             },
             async (location) => {
                 let coords = location.coords;
-                console.log(location);
                 // This function gets more consistent direction heading
                 let head = await Location.getHeadingAsync();
                 const cycData = {
@@ -73,6 +72,8 @@ export default function TrackerToggle(props) {
                   speed: coords.speed,
                   task: "watcher"
                 };
+
+                console.log(cycData);
 
                 try {
                   console.log("Sent at watcher");
@@ -116,8 +117,6 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.log(error);
   } else if (data) {
-    console.log(data.locations);
-
     // Format the server expects.
     if (data.locations.length >= 1) {
       const location = data.locations[0];
@@ -133,6 +132,8 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         speed: location.coords.speed,
         task: "background"
       };
+
+      console.log(cycData);
 
       try {
         console.log("Sending from task");
