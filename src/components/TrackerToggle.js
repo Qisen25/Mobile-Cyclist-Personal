@@ -7,6 +7,7 @@ import ws from "../util/ws";
 
 const LOCATION_TASK = "background-location-task";
 let watchPos = null;
+let listenHere = null;
 
 /**
  * Component for toggling background geolocation.
@@ -33,6 +34,7 @@ export default function TrackerToggle(props) {
 
       console.log("Disable streaming")
       watchPos?.remove()
+      listenHere?.clearInterval();
       ws.send({ type: "remove" })
 
       setEnabled(false);
@@ -44,7 +46,7 @@ export default function TrackerToggle(props) {
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval: 0,
+          timeInterval: 600,
           distanceInterval,
           foregroundService: {
             notificationTitle,
@@ -58,17 +60,22 @@ export default function TrackerToggle(props) {
               timeInterval: 1200,
               distanceInterval,
             },
-            location => {
+            async (location) => {
                 let coords = location.coords;
+                console.log(location);
+                // This function gets more consistent direction heading
+                let head = await Location.getHeadingAsync();
                 const cycData = {
                   type: "cyclist",
                   long: coords.longitude,
                   lat: coords.latitude,
-                  direction: coords.heading,
-                  speed: coords.speed
+                  direction: head.magHeading,
+                  speed: coords.speed,
+                  task: "watcher"
                 };
 
                 try {
+                  console.log("Sent at watcher");
                   ws.send(cycData);
                 } catch (err) {
                   console.log(err);
@@ -104,7 +111,8 @@ TrackerToggle.propTypes = {
 
 TrackerToggle.Accuracy = Location.Accuracy;
 
-TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
+TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
+
   if (error) {
     console.log(error);
   } else if (data) {
@@ -113,17 +121,24 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
     // Format the server expects.
     if (data.locations.length >= 1) {
       const location = data.locations[0];
+      // This function gets more consistent direction heading
+      // Note: Its possible that await can block a while before reaching ws send
+      //       this doesn't happen 90% of time but might reorder or improve this
+      let head = await Location.getHeadingAsync();
       const cycData = {
         type: "cyclist",
         long: location.coords.longitude,
         lat: location.coords.latitude,
-        direction: location.coords.heading,
-        speed: location.coords.speed
+        direction: head.magHeading,
+        speed: location.coords.speed,
+        task: "background"
       };
 
       try {
+        console.log("Sending from task");
         ws.send(cycData);
       } catch (err) {
+        console.log("Thrown at task");
         console.log(err);
       }
     }
