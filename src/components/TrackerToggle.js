@@ -7,7 +7,6 @@ import ws from "../util/ws";
 
 const LOCATION_TASK = "background-location-task";
 let watchPos = null;
-let listenHere = null;
 
 /**
  * Component for toggling background geolocation.
@@ -34,7 +33,6 @@ export default function TrackerToggle(props) {
 
       console.log("Disable streaming")
       watchPos?.remove()
-      listenHere?.clearInterval();
       ws.send({ type: "remove" })
 
       setEnabled(false);
@@ -46,7 +44,7 @@ export default function TrackerToggle(props) {
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval: 600,
+          timeInterval: 950,
           distanceInterval,
           foregroundService: {
             notificationTitle,
