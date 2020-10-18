@@ -31,14 +31,10 @@ export default function TrackerToggle(props) {
     if (enabled) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK);
 
-      console.log("Disable streaming")
-      watchPos?.remove()
-      ws.send({ type: "remove" })
-
       setEnabled(false);
     } else {
       setEnabled(true);
-      console.log("Now streaming")
+
       const { status } = await Location.requestPermissionsAsync();
 
       if (status === "granted") {
@@ -51,32 +47,6 @@ export default function TrackerToggle(props) {
             notificationBody
           }
         });
-
-        watchPos = await Location.watchPositionAsync(
-            {
-              accuracy,
-              timeInterval: 1200,
-              distanceInterval,
-            },
-            location => {
-                let coords = location.coords;
-                const cycData = {
-                  type: "cyclist",
-                  long: coords.longitude,
-                  lat: coords.latitude,
-                  direction: coords.heading,
-                  speed: coords.speed
-                };
-
-                try {
-                  ws.send(cycData);
-                } catch (err) {
-                  console.log(err);
-                }
-            },
-            error => console.log(error)
-        );
-
       } else {
         setEnabled(false);
       }
