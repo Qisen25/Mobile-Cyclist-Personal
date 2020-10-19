@@ -4,9 +4,10 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import ws from "../util/ws";
+import Settings from "../util/Settings";
+import { FileSystem } from "react-native-unimodules";
 
 const LOCATION_TASK = "background-location-task";
-let watchPos = null;
 
 /**
  * Component for toggling background geolocation.
@@ -74,7 +75,7 @@ TrackerToggle.propTypes = {
 
 TrackerToggle.Accuracy = Location.Accuracy;
 
-TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
+TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.log(error);
   } else if (data) {
@@ -91,10 +92,20 @@ TaskManager.defineTask(LOCATION_TASK, ({ data, error }) => {
         speed: location.coords.speed
       };
 
-      try {
-        ws.send(cycData);
-      } catch (err) {
-        console.log(err);
+      if (Settings.DEVELOPER_MODE) {
+        const uri = `${FileSystem.documentDirectory}/location.json`;
+        const content = await FileSystem.readAsStringAsync(uri);
+        const locations = JSON.parse(content);
+
+        locations.push(cycData);
+
+        await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
+      } else {
+        try {
+          ws.send(cycData);
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   } else {
