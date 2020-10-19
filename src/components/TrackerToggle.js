@@ -33,7 +33,7 @@ export default function TrackerToggle(props) {
 
       console.log("Disable streaming")
       watchPos?.remove()
-      ws.send({ type: "remove" })
+      ws.send({ type: "remove" }) // Plz keep this here, you need to inform server that u stop tracking so that your position is removed from redis cache
 
       setEnabled(false);
     } else {
