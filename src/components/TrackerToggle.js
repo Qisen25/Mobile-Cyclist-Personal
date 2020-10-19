@@ -32,6 +32,12 @@ export default function TrackerToggle(props) {
     if (enabled) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK);
 
+      try {
+        ws.send({ type: "remove" });
+      } catch (err) {
+        console.log(err);
+      }
+      
       setEnabled(false);
     } else {
       setEnabled(true);
@@ -41,7 +47,7 @@ export default function TrackerToggle(props) {
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval: 0,
+          timeInterval: 950,
           distanceInterval,
           foregroundService: {
             notificationTitle,
@@ -79,17 +85,20 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.log(error);
   } else if (data) {
-    console.log(data.locations);
-
     // Format the server expects.
     if (data.locations.length >= 1) {
       const location = data.locations[0];
+      // This function gets more consistent direction heading
+      // Note: Its possible that await can block a while before reaching ws send
+      //       this doesn't happen 90% of time but might reorder or improve this
+      const head = await Location.getHeadingAsync();
       const cycData = {
         type: "cyclist",
         long: location.coords.longitude,
         lat: location.coords.latitude,
-        direction: location.coords.heading,
-        speed: location.coords.speed
+        direction: head.magHeading,
+        speed: location.coords.speed,
+        task: "background"
       };
 
       if (Settings.DEVELOPER_MODE) {
@@ -106,6 +115,15 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         } catch (err) {
           console.log(err);
         }
+
+      console.log(cycData);
+
+      try {
+        console.log("Sending from task");
+        ws.send(cycData);
+      } catch (err) {
+        console.log("Thrown at task");
+        console.log(err);
       }
     }
   } else {

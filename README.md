@@ -12,3 +12,6 @@ relay this information to relevant motorists via the Expektus backend server.
 5. Go to Device Manager and create an emulator (Tested on Google Pixel 3a, Android 10)
 6. Run the emulator
 7. Run `npm run android` in the project root
+
+# Change log
+1. Watch pos or location task now get direction by Location.getHeadingAsync() since it provides more consistent direction. No more jumping around randomly (300 deg to 0 deg to 25 deg ... etc.). This has been tested and compared readings to other compass apps.
