@@ -4,9 +4,10 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import ws from "../util/ws";
+import Settings from "../util/Settings";
+import { FileSystem } from "react-native-unimodules";
 
 const LOCATION_TASK = "background-location-task";
-let watchPos = null;
 
 /**
  * Component for toggling background geolocation.
@@ -31,14 +32,16 @@ export default function TrackerToggle(props) {
     if (enabled) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK);
 
-      console.log("Disable streaming")
-      watchPos?.remove()
-      ws.send({ type: "remove" }) // Plz keep this here, you need to inform server that u stop tracking so that your position is removed from redis cache
-
+      try {
+        ws.send({ type: "remove" });
+      } catch (err) {
+        console.log(err);
+      }
+      
       setEnabled(false);
     } else {
       setEnabled(true);
-      console.log("Now streaming")
+
       const { status } = await Location.requestPermissionsAsync();
 
       if (status === "granted") {
@@ -51,38 +54,6 @@ export default function TrackerToggle(props) {
             notificationBody
           }
         });
-
-        watchPos = await Location.watchPositionAsync(
-            {
-              accuracy,
-              timeInterval: 1200,
-              distanceInterval,
-            },
-            async (location) => {
-                let coords = location.coords;
-                // This function gets more consistent direction heading
-                let head = await Location.getHeadingAsync();
-                const cycData = {
-                  type: "cyclist",
-                  long: coords.longitude,
-                  lat: coords.latitude,
-                  direction: head.magHeading,
-                  speed: coords.speed,
-                  task: "watcher"
-                };
-
-                console.log(cycData);
-
-                try {
-                  console.log("Sent at watcher");
-                  ws.send(cycData);
-                } catch (err) {
-                  console.log(err);
-                }
-            },
-            error => console.log(error)
-        );
-
       } else {
         setEnabled(false);
       }
@@ -111,7 +82,6 @@ TrackerToggle.propTypes = {
 TrackerToggle.Accuracy = Location.Accuracy;
 
 TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
-
   if (error) {
     console.log(error);
   } else if (data) {
@@ -121,7 +91,7 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
       // This function gets more consistent direction heading
       // Note: Its possible that await can block a while before reaching ws send
       //       this doesn't happen 90% of time but might reorder or improve this
-      let head = await Location.getHeadingAsync();
+      const head = await Location.getHeadingAsync();
       const cycData = {
         type: "cyclist",
         long: location.coords.longitude,
@@ -130,6 +100,21 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         speed: location.coords.speed,
         task: "background"
       };
+
+      if (Settings.DEVELOPER_MODE) {
+        const uri = `${FileSystem.documentDirectory}/location.json`;
+        const content = await FileSystem.readAsStringAsync(uri);
+        const locations = JSON.parse(content);
+
+        locations.push(cycData);
+
+        await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
+      } else {
+        try {
+          ws.send(cycData);
+        } catch (err) {
+          console.log(err);
+        }
 
       console.log(cycData);
 
