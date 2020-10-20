@@ -5,8 +5,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
-    "test": "jest",
-    "postinstall": "cd node_modules_patches ; ./patch.sh"
+    "test": "jest"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",

@@ -32,12 +32,16 @@ export default function TrackerToggle(props) {
     if (enabled) {
       await Location.stopLocationUpdatesAsync(LOCATION_TASK);
 
-      try {
-        ws.send({ type: "remove" });
-      } catch (err) {
-        console.log(err);
-      }
+      console.log("Disable streaming")
+      watchPos?.remove()
       
+      try {
+        // signals the server to remove position from cache as button turns off tracking
+        ws.send({ type: "remove" });
+      } catch(error) {
+        console.log(error);
+      }
+
       setEnabled(false);
     } else {
       setEnabled(true);
@@ -47,13 +51,51 @@ export default function TrackerToggle(props) {
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval: 950,
           distanceInterval,
           foregroundService: {
             notificationTitle,
             notificationBody
           }
         });
+
+        watchPos = await Location.watchPositionAsync(
+            {
+              accuracy,
+              distanceInterval,
+            },
+            location => {
+                let coords = location.coords;
+                const cycData = {
+                  type: "cyclist",
+                  long: coords.longitude,
+                  lat: coords.latitude,
+                  direction: coords.heading,
+                  speed: coords.speed,
+                  task: "watcher"
+                };
+
+                if (Settings.DEVELOPER_MODE) {
+                  const uri = `${FileSystem.documentDirectory}/location.json`;
+                  const content = await FileSystem.readAsStringAsync(uri);
+                  const locations = JSON.parse(content);
+          
+                  locations.push(cycData);
+          
+                  await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
+                }
+
+                console.log(cycData);
+
+                try {
+                  console.log("Sent at watcher");
+                  ws.send(cycData);
+                } catch (err) {
+                  console.log(err);
+                }
+            },
+            error => console.log(error)
+        );
+
       } else {
         setEnabled(false);
       }
@@ -85,18 +127,13 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.log(error);
   } else if (data) {
-    // Format the server expects.
     if (data.locations.length >= 1) {
       const location = data.locations[0];
-      // This function gets more consistent direction heading
-      // Note: Its possible that await can block a while before reaching ws send
-      //       this doesn't happen 90% of time but might reorder or improve this
-      const head = await Location.getHeadingAsync();
       const cycData = {
         type: "cyclist",
         long: location.coords.longitude,
         lat: location.coords.latitude,
-        direction: head.magHeading,
+        direction: location.coords.heading,
         speed: location.coords.speed,
         task: "background"
       };
@@ -109,14 +146,7 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         locations.push(cycData);
 
         await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
-      } else {
-        try {
-          ws.send(cycData);
-        } catch (err) {
-          console.log(err);
-        }
-
-      console.log(cycData);
+      }
 
       try {
         console.log("Sending from task");
@@ -126,7 +156,6 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         console.log(err);
       }
     }
-  } else {
-    console.log("no data");
   }
+
 });
