@@ -5,9 +5,11 @@ import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import ws from "../util/ws";
 import Settings from "../util/Settings";
-import { FileSystem } from "react-native-unimodules";
+import { FileSystem, Permissions } from "react-native-unimodules";
+import * as MediaLibrary from 'expo-media-library';
 
 const LOCATION_TASK = "background-location-task";
+let locationFile = [];
 
 /**
  * Component for toggling background geolocation.
@@ -42,11 +44,20 @@ export default function TrackerToggle(props) {
         console.log(error);
       }
 
+      if (Settings.DEVELOPER_MODE) {
+        const uri = `${FileSystem.documentDirectory}location.json`;
+
+        await FileSystem.writeAsStringAsync(uri, JSON.stringify(locationFile));
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        await MediaLibrary.createAlbumAsync("Download", asset, false)
+      }
+
       setEnabled(false);
     } else {
       setEnabled(true);
 
       const { status } = await Location.requestPermissionsAsync();
+      await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
@@ -75,13 +86,7 @@ export default function TrackerToggle(props) {
                 };
 
                 if (Settings.DEVELOPER_MODE) {
-                  const uri = `${FileSystem.documentDirectory}/location.json`;
-                  const content = await FileSystem.readAsStringAsync(uri);
-                  const locations = JSON.parse(content);
-          
-                  locations.push(cycData);
-          
-                  await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
+                  locationFile.push(cycData);
                 }
 
                 console.log(cycData);
@@ -139,13 +144,7 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
       };
 
       if (Settings.DEVELOPER_MODE) {
-        const uri = `${FileSystem.documentDirectory}/location.json`;
-        const content = await FileSystem.readAsStringAsync(uri);
-        const locations = JSON.parse(content);
-
-        locations.push(cycData);
-
-        await FileSystem.writeAsStringAsync(uri, JSON.stringify(locations));
+        locationFile.push(cycData);
       }
 
       try {
