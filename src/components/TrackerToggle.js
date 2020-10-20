@@ -63,7 +63,7 @@ export default function TrackerToggle(props) {
               accuracy,
               distanceInterval,
             },
-            location => {
+            async (location) => {
                 let coords = location.coords;
                 const cycData = {
                   type: "cyclist",
