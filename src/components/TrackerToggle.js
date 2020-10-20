@@ -33,7 +33,13 @@ export default function TrackerToggle(props) {
 
       console.log("Disable streaming")
       watchPos?.remove()
-      ws.send({ type: "remove" }) // Plz keep this here, you need to inform server that u stop tracking so that your position is removed from redis cache
+      
+      try {
+        // signals the server to remove position from cache as button turns off tracking
+        ws.send({ type: "remove" });
+      } catch(error) {
+        console.log(error);
+      }
 
       setEnabled(false);
     } else {
@@ -44,7 +50,6 @@ export default function TrackerToggle(props) {
       if (status === "granted") {
         await Location.startLocationUpdatesAsync(LOCATION_TASK, {
           accuracy,
-          timeInterval: 950,
           distanceInterval,
           foregroundService: {
             notificationTitle,
@@ -55,18 +60,15 @@ export default function TrackerToggle(props) {
         watchPos = await Location.watchPositionAsync(
             {
               accuracy,
-              timeInterval: 1200,
               distanceInterval,
             },
-            async (location) => {
+            location => {
                 let coords = location.coords;
-                // This function gets more consistent direction heading
-                let head = await Location.getHeadingAsync();
                 const cycData = {
                   type: "cyclist",
                   long: coords.longitude,
                   lat: coords.latitude,
-                  direction: head.magHeading,
+                  direction: coords.heading,
                   speed: coords.speed,
                   task: "watcher"
                 };
@@ -115,18 +117,13 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
   if (error) {
     console.log(error);
   } else if (data) {
-    // Format the server expects.
     if (data.locations.length >= 1) {
       const location = data.locations[0];
-      // This function gets more consistent direction heading
-      // Note: Its possible that await can block a while before reaching ws send
-      //       this doesn't happen 90% of time but might reorder or improve this
-      let head = await Location.getHeadingAsync();
       const cycData = {
         type: "cyclist",
         long: location.coords.longitude,
         lat: location.coords.latitude,
-        direction: head.magHeading,
+        direction: location.coords.heading,
         speed: location.coords.speed,
         task: "background"
       };
