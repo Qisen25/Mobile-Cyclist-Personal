@@ -14,4 +14,4 @@ relay this information to relevant motorists via the Expektus backend server.
 7. Run `npm run android` in the project root
 
 # Change log
-1. <del>Watch pos or location task now get direction by Location.getHeadingAsync() since it provides more consistent direction<del>. (Removed this idea ( using bearing to help get direction ), found to be unsuitable for cyclist app when testing.
+1. <del>Watch pos or location task now get direction by Location.getHeadingAsync() since it provides more consistent direction</del>. (Removed this idea ( using bearing to help get direction ), found to be unsuitable for cyclist app when testing.
